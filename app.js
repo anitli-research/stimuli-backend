@@ -167,7 +167,7 @@ app.get("/pool", async (req, res) => {
 });
 
 app.get("/pool/:poolId", upload.none(), async (req, res) => {
-  console.log(`Get/pool/${req.params.poolId} Listing stimuli`);
+  console.log(`GET /pool/${req.params.poolId} Listing stimuli`);
   const stimuli = await getStimuli(req.params["poolId"]);
   if (stimuli === null) {
     res.sendStatus(400);
@@ -177,7 +177,7 @@ app.get("/pool/:poolId", upload.none(), async (req, res) => {
 });
 
 app.get("/pool/:poolId/:stimulusId", upload.none(), async (req, res) => {
-  console.log(`Get /pool/${req.params.poolId}/${req.params.stimulusId} Downloading stimulus`);
+  console.log(`GET /pool/${req.params.poolId}/${req.params.stimulusId} Downloading stimulus`);
   res.setHeader("Content-Disposition", `attachment; filename="${req.params["stimulusId"]}"`);
   res.setHeader("Content-Type", "application/octet-stream");
   try {
@@ -494,7 +494,7 @@ app.get("/relation/:experimentId", upload.none(), async (req, res) => {
 app.get("/response/:session_id", upload.none(), async (req, res) => {
   console.log(`GET /response/ Get responses`);
   const session_id = parseInt(req.params.session_id);
-  if (session_id.isNaN()) {
+  if (Number.isNaN(session_id)) {
     res.status(400).json(`Invalid session_id.`);
   }
 
