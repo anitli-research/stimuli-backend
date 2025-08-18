@@ -1,0 +1,23 @@
+{
+  "name": "stimuli-backend",
+  "version": "1.0.0",
+  "description": "backend for the stimuli application",
+  "main": "app.js",
+  "repository": "https://github.com/anitli-research/stimuli-backend",
+  "author": "Anita",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "@dotenvx/dotenvx": "^1.48.4",
+    "basic-ftp": "^5.0.5",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.0.0",
+    "multer": "^2.0.2",
+    "multer-ftp": "^1.2.0",
+    "mysql2": "^3.14.3"
+  }
+}
