@@ -538,8 +538,12 @@ app.post("/response", upload.none(), async (req, res) => {
   res.status(201).json({ "response_id": rows.insertId });
 });
 
+app.get('/', (req, res) => {
+  res.send(`Hello from port ${process.env.PORT}!`);
+})
+
 const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
 server.keepAliveTimeout = 120 * 1000;
-server.headersTimeout = 5 * 1000;
-server.requestTimeout = 10 * 1000;
+server.headersTimeout = 120 * 1000;
+server.requestTimeout = 120 * 1000;
