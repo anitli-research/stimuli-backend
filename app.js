@@ -215,8 +215,8 @@ app.post("/experiment/", upload.none(), async (req, res) => {
     try {
       await connection.beginTransaction();
 
-      const q_exp = 'INSERT INTO experiments(`name`, `feedback`, `pool_id`) VALUES (?, ?, ?)';
-      const vals_exp = [req.body.name, req.body.feedback === "on", req.body.pool_id];
+      const q_exp = 'INSERT INTO experiments(`name`, `feedback`, `accuracy`, `pool_id`) VALUES (?, ?, ?, ?)';
+      const vals_exp = [req.body.name, req.body.feedback === "on", req.body.accuracy === "on", req.body.pool_id];
       try {
         const [exp_rows, exp_fields] = await connection.query(q_exp, vals_exp);
         const experiment_id = exp_rows.insertId;
@@ -277,7 +277,7 @@ app.get("/experiment/:experimentName", upload.none(), async (req, res) => {
 
   if (rows.length != 1) {
     console.log(`Experiment ${req.params.experimentName} not found.`);
-    res.status(400).send(e.message);
+    res.status(404);
     return;
   }
   res.json(rows[0]);
@@ -438,7 +438,7 @@ app.post("/session/", upload.none(), async (req, res) => {
       trials.push({ trial_id: rows_trial.insertId, session_id: session_id, block_id: blocks[block_idx].block_id, trial_idx: trial_idx, stimulus: stimulus, expected: expected, distractors: distractors });
     }
   }
-  res.status(201).json({ "session_id": session_id, blocks: blocks, "trials": trials });
+  res.status(201).json({ "session_id": session_id, "blocks": blocks, "trials": trials });
 });
 
 app.post("/session/:sessionId", upload.none(), async (req, res) => {

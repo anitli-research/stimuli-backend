@@ -10,6 +10,7 @@ CREATE TABLE experiments (
     name VARCHAR(255) NOT NULL,
     pool_id VARCHAR(255) NOT NULL,
     feedback BOOLEAN NOT NULL DEFAULT false,
+    accuracy BOOLEAN NOT NULL DEFAULT false,
     UNIQUE (name)
 );
 
