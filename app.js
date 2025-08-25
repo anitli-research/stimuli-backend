@@ -304,22 +304,22 @@ app.get("/session/", upload.none(), async (req, res) => {
 
 app.post("/session/", upload.none(), async (req, res) => {
   const experiment_id = req.body.experimentId;
-  const session_name = req.body.sessionName;
-  console.log(`POST /session/${experiment_id}/${session_name} Creating session`);
+  const user_name = req.body.userName;
+  console.log(`POST /session/${experiment_id}/${user_name} Creating session`);
 
-  // Check if we already have a session with the same (id, name)
-  const q_check = `SELECT * FROM sessions WHERE name = ? AND experiment_id = ?;`
-  const [rows_check, fields_check] = await dbpool.query(q_check, [experiment_id, session_name]).catch(e => {
-    console.log(e);
-    res.status(400).send(e.message);
-    return;
-  });
+  // // Check if we already have a session with the same (id, name)
+  // const q_check = `SELECT * FROM sessions WHERE username = ? AND experiment_id = ?;`
+  // const [rows_check, fields_check] = await dbpool.query(q_check, [experiment_id, user_name]).catch(e => {
+  //   console.log(e);
+  //   res.status(400).send(e.message);
+  //   return;
+  // });
 
-  if (rows_check.length >= 1) {
-    console.log(`Session already exists.`);
-    res.status(400).send(`Session already exists.`);
-    return;
-  }
+  // if (rows_check.length >= 1) {
+  //   console.log(`Session already exists.`);
+  //   res.status(400).send(`Session already exists.`);
+  //   return;
+  // }
 
   const q_exp = `SELECT * FROM experiments WHERE experiment_id = ?;`
 
@@ -377,8 +377,8 @@ app.post("/session/", upload.none(), async (req, res) => {
     return;
   });
 
-  const q_session = "INSERT INTO `sessions`(`experiment_id`, `name`, `start_date`) VALUES (?, ?, CURRENT_TIMESTAMP);"
-  const values_session = [experiment_id, session_name]
+  const q_session = "INSERT INTO `sessions`(`experiment_id`, `username`, `start_date`) VALUES (?, ?, CURRENT_TIMESTAMP);"
+  const values_session = [experiment_id, user_name]
 
   const [rows_session, field_sesion] = await dbpool.query(q_session, values_session).catch(async e => {
     console.log(e);
@@ -391,7 +391,7 @@ app.post("/session/", upload.none(), async (req, res) => {
   const session_id = rows_session.insertId;
 
   let trials = [];
-  const q_trial = "INSERT INTO `trials`(`session_id`, `block_id`, `trial_idx`, `stimulus`, `expected`,`distractors`) VALUES (?, ?, ?, ?, ?, ?);"
+  const q_trial = "INSERT INTO `trials`(`session_id`, `block_id`, `trial_idx`, `stimulus`, `expected`, `distractors`) VALUES (?, ?, ?, ?, ?, ?);"
   for (let block_idx = 0; block_idx < blocks.length; block_idx++) {
     let block = blocks[block_idx];
     for (let trial_idx = 1; trial_idx <= block.n_trials; trial_idx++) {
@@ -495,6 +495,45 @@ app.get("/relation/:experimentId", upload.none(), async (req, res) => {
 
   res.json(rows);
 });
+
+
+// csv
+app.get("/session/users", upload.none(), async (req, res) => {
+  console.log(`GET /session/users usernames`);
+  const q = `SELECT DISTINCT username FROM sessions;`;
+
+  const [rows, fields] = await dbpool.query(q, []).catch(e => {
+    console.log(e);
+    res.status(400).send({ message: `Fail to obtain usernames. ${e}` });
+    return;
+  });
+  res.json(rows);
+});
+
+
+app.get("/csv/:username", upload.none(), async (req, res) => {
+  console.log(`GET /csv/${req.params.username}`);
+
+  const q = `SELECT * FROM sessions
+INNER JOIN experiments
+	ON experiments.experiment_id = sessions.experiment_id 
+INNER JOIN blocks
+	ON blocks.experiment_id = experiments.experiment_id
+INNER JOIN trials
+	ON trials.session_id = sessions.session_id
+INNER JOIN responses
+	on responses.trial_id = trials.trial_id
+WHERE sessions.username = ?;`
+  const values = [req.params.username]
+
+  const [rows, fields] = await dbpool.query(q, values).catch(e => {
+    console.log(e);
+    res.status(400).send({ message: `Fail to obtain responses. ${e}` });
+    return;
+  });
+  res.json(rows);
+});
+
 
 // Response
 app.get("/response/:session_id", upload.none(), async (req, res) => {

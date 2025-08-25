@@ -38,13 +38,15 @@ CREATE TABLE relations (
 CREATE TABLE sessions (
     session_id INT AUTO_INCREMENT PRIMARY KEY,
     experiment_id INT NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
     start_date TIMESTAMP NOT NULL,
     end_date TIMESTAMP NULL DEFAULT NULL,
     accuracy DOUBLE NULL DEFAULT NULL,
-    FOREIGN KEY (experiment_id) REFERENCES experiments(experiment_id),
-    CONSTRAINT UC_exp_user_name UNIQUE (experiment_id, name)
+    FOREIGN KEY (experiment_id) REFERENCES experiments(experiment_id)
 );
+
+CREATE INDEX session_user_idx ON sessions(username);
+CREATE INDEX session_user_exp_idx ON sessions(username, experiment_id);
 
 CREATE TABLE trials (
     trial_id INT AUTO_INCREMENT PRIMARY KEY,
