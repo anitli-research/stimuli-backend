@@ -154,6 +154,12 @@ async function get_stimulus(poolId, stimulusId, stream) {
   }
 }
 
+// Auth
+
+app.get("/auth", basicAuth, async (req, res) => {
+  res.sendStatus(200);
+});
+
 // Pool
 // app.get("/pool", basicAuth, async (req, res) => {
 app.get("/pool", async (req, res) => {
